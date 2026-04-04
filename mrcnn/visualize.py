@@ -8,7 +8,6 @@ Written by Waleed Abdulla
 """
 
 import os
-import sys
 import random
 import itertools
 import colorsys
@@ -20,11 +19,7 @@ from matplotlib import patches,  lines
 from matplotlib.patches import Polygon
 import IPython.display
 
-# Root directory of the project
-ROOT_DIR = os.path.abspath("../")
-
-# Import Mask RCNN
-sys.path.append(ROOT_DIR)  # To find local version of the library
+# Import Mask RCNN (package-relative; run notebooks from repo root)
 from mrcnn import utils
 
 
@@ -80,7 +75,7 @@ def apply_mask(image, mask, color, alpha=0.5):
     return image
 
 
-def display_instances(path, image, boxes, masks, class_ids, class_names,
+def display_instances(image, boxes, masks, class_ids, class_names,
                       scores=None, title="",
                       figsize=(16, 16), ax=None,
                       show_mask=True, show_bbox=True,
@@ -119,25 +114,10 @@ def display_instances(path, image, boxes, masks, class_ids, class_names,
     ax.set_xlim(-10, width + 10)
     ax.axis('off')
     ax.set_title(title)
-    bright =  True
-    brightness = 1.0 if bright else 0.7
-    hsv = [(i / N, 1, brightness) for i in range(N)]
-    colors = list(map(lambda c: colorsys.hsv_to_rgb(*c), hsv))
 
     masked_image = image.astype(np.uint32).copy()
     for i in range(N):
-        if class_ids[i] == 5:
-            color = colors[5] 
-        elif class_ids[i] == 4:
-            color = colors[5]
-        elif class_ids[i] == 3:
-            color = colors[3]
-        elif class_ids[i] == 2:
-            color = colors[2]
-        elif  class_ids[i] == 1:
-            color = colors[0]
-        else:
-            random.shuffle(colors)
+        color = colors[i]
 
         # Bounding box
         if not np.any(boxes[i]):
@@ -178,11 +158,8 @@ def display_instances(path, image, boxes, masks, class_ids, class_names,
             p = Polygon(verts, facecolor="none", edgecolor=color)
             ax.add_patch(p)
     ax.imshow(masked_image.astype(np.uint8))
-    plt.savefig(path)
     if auto_show:
         plt.show()
-
-
 
 
 def display_differences(image,
@@ -320,7 +297,7 @@ def display_top_masks(image, mask, class_ids, class_names, limit=4):
     display_images(to_display, titles=titles, cols=limit + 1, cmap="Blues_r")
 
 
-def plot_precision_recall(MODEL_NAME, AP, precisions, recalls):
+def plot_precision_recall(AP, precisions, recalls):
     """Draw the precision-recall curve.
 
     AP: Average precision at IoU >= 0.5
@@ -333,7 +310,6 @@ def plot_precision_recall(MODEL_NAME, AP, precisions, recalls):
     ax.set_ylim(0, 1.1)
     ax.set_xlim(0, 1.1)
     _ = ax.plot(recalls, precisions)
-    plt.savefig(MODEL_NAME+'/'+'PrecisionxRecall.png')
 
 
 def plot_overlaps(gt_class_ids, pred_class_ids, pred_scores,

@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+dist/
+build/
+venv/
+.env/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Training outputs (large; do not commit weights unless you intend to)
+logs/
+*.h5
+
+# Local dataset files (keep images/JSON out of git)
+datasets/*
+!datasets/README.md
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
